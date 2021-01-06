@@ -1,6 +1,13 @@
 #include "Semaphore.hpp"
 
-Semaphore::Semaphore() : value(1) { ; }
+Semaphore::Semaphore() : value(1)
+{
+    pthread_cond_init(&condition, NULL);
+}
+Semaphore::~Semaphore()
+{
+    pthread_cond_destroy(&condition);
+}
 Semaphore::Semaphore(unsigned val) : value(val) { ; }
 void Semaphore::up()
 {
