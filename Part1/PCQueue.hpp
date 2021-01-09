@@ -1,6 +1,7 @@
 #ifndef _QUEUEL_H
 #define _QUEUEL_H
 #include "Headers.hpp"
+#include "Semaphore.hpp"
 
 // Single Producer - Multiple Consumer queue
 template <typename T>
@@ -19,9 +20,11 @@ public:
 	void push(const T &item);
 
 private:
-	std::deque<T> queue_;
+	std::deque<T> queue;
 	pthread_mutex_t lock;
 	pthread_cond_t condition;
+	bool writer_inside = false;
+	Semaphore token;
 	// Add your class memebers here
 };
 // Recommendation: Use the implementation of the std::queue for this exercise
