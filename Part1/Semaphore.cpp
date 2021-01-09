@@ -1,28 +1,53 @@
 #include "Semaphore.hpp"
 
-Semaphore::Semaphore() : value(1)
+Semaphore::Semaphore() : value(0)
 {
-    pthread_cond_init(&condition, NULL);
+    if (pthread_cond_init(&condition, NULL) != 0)
+    {
+        cout << "unsucesfull condition initizlization" << endl;
+    }
+    if (pthread_mutex_init(&mutex, NULL) != 0)
+    {
+        cout << "unsucesfull mutex initizlization" << endl;
+    }
+    else
+    {
+        cout << "semaphore successfully created" << endl;
+    }
 }
-Semaphore::~Semaphore()
+Semaphore::Semaphore(unsigned val) : value(val)
 {
-    pthread_cond_destroy(&condition);
+    if (pthread_cond_init(&condition, NULL) != 0)
+    {
+        cout << "unsucesfull condition initizlization" << endl;
+    }
+    if (pthread_mutex_init(&mutex, NULL) != 0)
+    {
+        cout << "unsucesfull mutex initizlization" << endl;
+    }
+    else
+    {
+        cout << "semaphore successfully created" << endl;
+    }
 }
-Semaphore::Semaphore(unsigned val) : value(val) { ; }
 void Semaphore::up()
 {
-    pthread_mutex_lock(&(mutex));
+    MUTEX_LOCK(mutex);
     value++;
-    pthread_cond_broadcast(&(condition));
-    pthread_mutex_unlock(&(mutex));
+    if (value <= 0)
+    {
+        COND_SIGNAL(condition);
+    }
+
+    MUTEX_UNLOCK(mutex);
 }
 void Semaphore::down()
 {
-    pthread_mutex_lock(&(mutex));
-    while (value == 0)
+    MUTEX_LOCK(mutex);
+    while (value < 0)
     {
-        pthread_cond_wait(&(condition), &(mutex));
+        WAIT(condition, mutex);
     }
     value--;
-    pthread_mutex_unlock(&(mutex));
+    MUTEX_UNLOCK(mutex);
 }
