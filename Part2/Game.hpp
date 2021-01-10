@@ -2,6 +2,7 @@
 #define __GAMERUN_H
 
 #include "../Part1/Headers.hpp"
+#include "../Part1/PCQueue.hpp"
 #include "Thread.hpp"
 
 /*--------------------------------------------------------------------------------
@@ -15,7 +16,7 @@
 #define BLUE "\033[34m"	   /* Blue - 4*/
 #define MAGENTA "\033[35m" /* Magenta - 5*/
 #define CYAN "\033[36m"	   /* Cyan - 6*/
-
+static const char *colors[7] = {BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN};
 /*--------------------------------------------------------------------------------
 								  Auxiliary Structures
 --------------------------------------------------------------------------------*/
@@ -60,5 +61,6 @@ protected: // All members here are protected, instead of private for testing pur
 	bool print_on;		 // Allows the printing of the board. Turn this off when you are checking performance (Dry 3, last question)
 
 	// TODO: Add in your variables and synchronization primitives
+	bool game_is_running_now;
 };
 #endif

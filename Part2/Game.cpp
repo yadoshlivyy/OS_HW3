@@ -1,12 +1,16 @@
 #include "Game.hpp"
 
-static const char *colors[7] = {BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN};
+
 /*--------------------------------------------------------------------------------
 								
 --------------------------------------------------------------------------------*/
 void Game::run()
 {
-
+	if (game_is_running_now)
+	{
+		//TODO comment change
+		return;
+	}
 	_init_game(); // Starts the threads and all other variables you need
 	print_board("Initial Board");
 	for (uint i = 0; i < m_gen_num; ++i)
@@ -18,8 +22,10 @@ void Game::run()
 		print_board(nullptr);
 	} // generation loop
 	print_board("Final Board");
+	game_is_running_now = false;
 	_destroy_game();
 }
+//! this function finished!
 Game::Game(game_params) { ; }
 const vector<double> Game::gen_hist() const { ; }
 const vector<double> Game::tile_hist() const { ; }
