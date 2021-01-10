@@ -44,10 +44,11 @@ void Semaphore::up()
 void Semaphore::down()
 {
     MUTEX_LOCK(mutex);
-    while (value < 0)
+    value--;
+    if (value < 0)
     {
         WAIT(condition, mutex);
     }
-    value--;
+    
     MUTEX_UNLOCK(mutex);
 }

@@ -48,8 +48,6 @@ struct thread_tools
 									Class Declaration
 --------------------------------------------------------------------------------*/
 
-
-
 class ThreadWorker : public Thread
 {
 
@@ -89,13 +87,11 @@ public:
 	ThreadWorker(uint thread_id, PCQueue<thread_tools> *jobs) : Thread(thread_id), jobs(jobs){};
 };
 
-
-
 class Game
 {
 public:
 	Game(game_params);
-	~Game()=default;
+	~Game() = default;
 	void run();								// Runs the game
 	const vector<double> gen_hist() const;	// Returns the generation timing histogram
 	const vector<double> tile_hist() const; // Returns the tile timing histogram
@@ -122,11 +118,10 @@ protected: // All members here are protected, instead of private for testing pur
 	bool game_is_running_now;
 	uint m_thread_num_tmp;
 	string filename;
-	bool game_running;
-	GameTable* prev;
-	GameTable* next;
+	GameTable *prev;
+	GameTable *next;
 	PCQueue<thread_tools> jobs;
 	Semaphore report_mutex;
-	Semaphore workers_report;  
+	Semaphore workers_report;
 };
 #endif

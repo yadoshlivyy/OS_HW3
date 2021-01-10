@@ -9,7 +9,13 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/GameOfLife",
-            "args": [],
+            "args": [
+                "small.txt",
+                "10",
+                "10",
+                "Y",
+                "Y"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

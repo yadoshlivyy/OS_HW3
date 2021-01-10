@@ -1,6 +1,5 @@
 #include "Game.hpp"
 
-
 /*--------------------------------------------------------------------------------
 								
 --------------------------------------------------------------------------------*/
@@ -25,35 +24,107 @@ void Game::run()
 	game_is_running_now = false;
 	_destroy_game();
 }
-//! this function finished!
-Game::Game(game_params) { ; }
-const vector<double> Game::gen_hist() const { ; }
-const vector<double> Game::tile_hist() const { ; }
-uint Game::thread_num() const { ; }
+
+Game::Game(game_params param) : jobs(), report_mutex(1), workers_report(), m_tile_hist(), m_gen_hist(), m_threadpool(), prev(nullptr), next(nullptr)
+{
+	filename = param.filename;
+	m_gen_num = param.n_gen;
+	interactive_on = param.interactive_on;
+	print_on = param.print_on;
+	game_is_running_now = false;
+	m_thread_num_tmp = param.n_thread;
+}
+
+const vector<double> Game ::gen_hist() const
+{
+	return m_gen_hist;
+}
+
+const vector<double> Game ::tile_hist() const
+{
+	return m_tile_hist;
+}
+
+uint Game::thread_num() const
+{
+	if (m_thread_num_tmp >= prev->get_rows_num())
+	{
+		return prev->get_rows_num();
+	}
+	return m_thread_num_tmp;
+}
 void Game::_init_game()
 {
-
-	// Create game fields - Consider using utils:read_file, utils::split
-	// Create & Start threads
-	// Testing of your implementation will presume all threads are started here
+	if (game_is_running_now)
+	{
+		return;
+	}
+	prev = new GameTable(filename);
+	next = new GameTable(*prev);
+	m_thread_num = thread_num();
+	for (int i = 0; i < m_thread_num; i++)
+	{
+		auto newWorker = new ThreadWorker(i, &jobs);
+		m_threadpool.push_back(newWorker);
+	}
+	for (auto worker : m_threadpool)
+	{
+		worker->start();
+	}
+	game_is_running_now = true;
 }
 
 void Game::_step(uint curr_gen)
 {
-	// Push jobs to queue
-	// Wait for the workers to finish calculating
-	// Swap pointers between current and next field
-	// NOTE: Threads must not be started here - doing so will lead to a heavy penalty in your grade
+	if (!game_is_running_now)
+	{
+		return;
+	}
+	int rowsForEach = prev->get_rows_num() / m_thread_num;
+	int currRow = 0, reported = 0, nextRow = 0;
+	thread_tools toolbox = {&workers_report, &reported, m_thread_num, false, &m_tile_hist, &report_mutex};
+	for (int i = 0; i < m_thread_num; i++)
+	{
+		nextRow = currRow + rowsForEach;
+		//in case it is the last iteration, we need to add the rest of the raws, if there is any
+		if (i == m_thread_num - 1)
+		{
+			nextRow += prev->get_rows_num() - (rowsForEach * m_thread_num);
+		}
+		TileJob tile(prev, next, currRow, nextRow - 1,1);
+		toolbox.tile = tile;
+		jobs.push(toolbox);
+		currRow = nextRow;
+	}
+	//wait for workers to finish
+	workers_report.down();
+
+	GameTable *tmp = prev;
+	prev = next;
+	next = tmp;
 }
 
 void Game::_destroy_game()
 {
-	// Destroys board and frees all threads and resources
-	// Not implemented in the Game's destructor for testing purposes.
-	// All threads must be joined here
+	if (!game_is_running_now)
+	{
+		return;
+	}
+	for (int i = 0; i < m_thread_num - 1; i++)
+	{
+		thread_tools toolbox;
+		toolbox.suicide = true;
+		jobs.push(toolbox);
+	}
 	for (uint i = 0; i < m_thread_num; ++i)
 	{
 		m_threadpool[i]->join();
+	}
+	delete next;
+	delete prev;
+	for (auto worker : m_threadpool)
+	{
+		delete worker;
 	}
 }
 
@@ -74,7 +145,7 @@ inline void Game::print_board(const char *header)
 		if (header != nullptr)
 			cout << "<------------" << header << "------------>" << endl;
 
-		// TODO: Print the board
+		cout << *prev;
 
 		// Display for GEN_SLEEP_USEC micro-seconds on screen
 		if (interactive_on)
