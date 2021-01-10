@@ -7,8 +7,8 @@ class TileJob
 public:
     TileJob() : old_table(nullptr), new_table(nullptr), start_row(0), end_row(0) {}
 
-    TileJob(GameTable *old_table, GameTable *new_table, int start_row, int end_row) : old_table(old_table), new_table(new_table),
-                                                                                      start_row(start_row), end_row(end_row){};
+    TileJob(GameTable *old_table, GameTable *new_table, int start_row, int end_row, int phase) : old_table(old_table), new_table(new_table),
+                                                                                                 start_row(start_row), end_row(end_row), phase(phase){};
 
     TileJob(const TileJob &tile) = default;
 
@@ -25,6 +25,7 @@ private:
     int start_row;
 
     int end_row;
+    int phase;
 };
 
 #endif
