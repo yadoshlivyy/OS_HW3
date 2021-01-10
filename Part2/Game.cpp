@@ -30,7 +30,6 @@ Game::Game(game_params) { ; }
 const vector<double> Game::gen_hist() const { ; }
 const vector<double> Game::tile_hist() const { ; }
 uint Game::thread_num() const { ; }
-Game::~Game() { ; }
 void Game::_init_game()
 {
 

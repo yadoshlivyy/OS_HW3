@@ -5,7 +5,7 @@
 #include "../Part1/PCQueue.hpp"
 #include "Thread.hpp"
 #include "TileJob.hpp"
-// #include "GameTable.hpp"
+#include "GameTable.hpp"
 
 /*--------------------------------------------------------------------------------
 								  Species colors
@@ -48,11 +48,54 @@ struct thread_tools
 									Class Declaration
 --------------------------------------------------------------------------------*/
 
+
+
+class ThreadWorker : public Thread
+{
+
+	PCQueue<thread_tools> *jobs;
+	thread_tools toolbox;
+
+	void thread_workload() override
+	{
+		while (true)
+		{
+			toolbox = jobs->pop();
+
+			if (toolbox.suicide)
+			{
+				break;
+			}
+			auto work_start = std::chrono::system_clock::now();
+			toolbox.tile.fill_new_tile_job();
+			auto work_end = std::chrono::system_clock::now();
+			reportFinished((double)std::chrono::duration_cast<std::chrono::microseconds>(work_end - work_start).count());
+		}
+	}
+
+	void reportFinished(double time)
+	{
+		toolbox.report_lock->down();
+		*toolbox.reported_workers += 1;
+		if (*toolbox.reported_workers == toolbox.num_of_workers)
+		{
+			toolbox.report_alert->up();
+		}
+		toolbox.tile_hist->push_back(time);
+		toolbox.report_lock->up();
+	};
+
+public:
+	ThreadWorker(uint thread_id, PCQueue<thread_tools> *jobs) : Thread(thread_id), jobs(jobs){};
+};
+
+
+
 class Game
 {
 public:
 	Game(game_params);
-	~Game();
+	~Game()=default;
 	void run();								// Runs the game
 	const vector<double> gen_hist() const;	// Returns the generation timing histogram
 	const vector<double> tile_hist() const; // Returns the tile timing histogram
@@ -77,5 +120,13 @@ protected: // All members here are protected, instead of private for testing pur
 
 	// TODO: Add in your variables and synchronization primitives
 	bool game_is_running_now;
+	uint m_thread_num_tmp;
+	string filename;
+	bool game_running;
+	GameTable* prev;
+	GameTable* next;
+	PCQueue<thread_tools> jobs;
+	Semaphore report_mutex;
+	Semaphore workers_report;  
 };
 #endif
