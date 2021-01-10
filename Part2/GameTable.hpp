@@ -23,7 +23,6 @@ public:
     ~GameTable() = default;
 
 private:
-    
     int columns_num;
 
     int rows_num;
@@ -34,6 +33,6 @@ private:
 
     int cell_in_board_and_alive(int x, int y) const;
 
-    friend class Tile;
+    friend class TileJob;
 };
 #endif
