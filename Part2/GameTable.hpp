@@ -1,10 +1,17 @@
 #ifndef __GAME_TABLE_H
 #define __GAME_TABLE_H
-
 #include "utils.hpp"
-#include "Game.hpp"
+#include "../Part1/Headers.hpp"
+#define RESET "\033[0m"
+#define BLACK "\033[30m"   /* Black - 7 */
+#define RED "\033[31m"	   /* Red - 1*/
+#define GREEN "\033[32m"   /* Green - 2*/
+#define YELLOW "\033[33m"  /* Yellow - 3*/
+#define BLUE "\033[34m"	   /* Blue - 4*/
+#define MAGENTA "\033[35m" /* Magenta - 5*/
+#define CYAN "\033[36m"	   /* Cyan - 6*/
+static const char *colors[7] = {BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN};
 
-//! COMMENT ALL
 class GameTable
 {
 public:

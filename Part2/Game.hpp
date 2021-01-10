@@ -1,25 +1,28 @@
 #ifndef __GAMERUN_H
 #define __GAMERUN_H
-
 #include "../Part1/Headers.hpp"
+#include "../Part1/Semaphore.hpp"
 #include "../Part1/PCQueue.hpp"
 #include "Thread.hpp"
+#include "TileJob.hpp"
+// #include "GameTable.hpp"
 
 /*--------------------------------------------------------------------------------
 								  Species colors
 --------------------------------------------------------------------------------*/
-#define RESET "\033[0m"
-#define BLACK "\033[30m"   /* Black - 7 */
-#define RED "\033[31m"	   /* Red - 1*/
-#define GREEN "\033[32m"   /* Green - 2*/
-#define YELLOW "\033[33m"  /* Yellow - 3*/
-#define BLUE "\033[34m"	   /* Blue - 4*/
-#define MAGENTA "\033[35m" /* Magenta - 5*/
-#define CYAN "\033[36m"	   /* Cyan - 6*/
-static const char *colors[7] = {BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN};
+// #define RESET "\033[0m"
+// #define BLACK "\033[30m"   /* Black - 7 */
+// #define RED "\033[31m"	   /* Red - 1*/
+// #define GREEN "\033[32m"   /* Green - 2*/
+// #define YELLOW "\033[33m"  /* Yellow - 3*/
+// #define BLUE "\033[34m"	   /* Blue - 4*/
+// #define MAGENTA "\033[35m" /* Magenta - 5*/
+// #define CYAN "\033[36m"	   /* Cyan - 6*/
+// static const char *colors[7] = {BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN};
 /*--------------------------------------------------------------------------------
 								  Auxiliary Structures
 --------------------------------------------------------------------------------*/
+
 struct game_params
 {
 	// All here are derived from ARGV, the program's input parameters.
@@ -28,6 +31,17 @@ struct game_params
 	string filename;
 	bool interactive_on;
 	bool print_on;
+};
+
+struct thread_tools
+{
+	Semaphore *report_alert;
+	int *reported_workers;
+	uint num_of_workers;
+	bool suicide;
+	vector<double> *tile_hist;
+	Semaphore *report_lock;
+	TileJob tile;
 };
 /*--------------------------------------------------------------------------------
 									Class Declaration

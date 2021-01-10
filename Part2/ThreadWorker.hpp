@@ -1,20 +1,9 @@
-#ifndef UNTITLED_WORKER_THREAD_H
-#define UNTITLED_WORKER_THREAD_H
 
-#include "Thread.hpp"
+
+#ifndef __UNTITLED_WORKER_THREAD_H
+#define __UNTITLED_WORKER_THREAD_H
 #include "Game.hpp"
-#include "TileJob.hpp"
-
-struct thread_tools
-{
-    Semaphore *report_alert;
-    int *reported_workers;
-    uint num_of_workers;
-    bool suicide;
-    vector<double> *tile_hist;
-    Semaphore *report_lock;
-    TileJob tile;
-};
+#include "Thread.hpp"
 
 class ThreadWorker : public Thread
 {
