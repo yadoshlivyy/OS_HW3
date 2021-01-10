@@ -20,12 +20,38 @@ public:
 	void push(const T &item);
 
 private:
-	std::deque<T> queue;
+	queue<T> queue_pc;
 	pthread_mutex_t lock;
 	pthread_cond_t condition;
 	bool writer_inside = false;
 	Semaphore token;
 	// Add your class memebers here
 };
-// Recommendation: Use the implementation of the std::queue for this exercise
+template <typename T>
+void PCQueue<T>::push(const T &item)
+{
+    writer_inside = true;
+    MUTEX_LOCK(lock);
+    queue_pc.push(item);
+    writer_inside = false;
+    COND_BROADCAST(condition);
+    MUTEX_UNLOCK(lock);
+    token.up();
+}
+
+template <typename T>
+T PCQueue<T>::pop()
+{
+    token.down();
+    T return_value;
+    MUTEX_LOCK(lock);
+    while (writer_inside)
+    {
+        WAIT(condition, lock);
+    }
+    return_value = queue_pc.front();
+    queue_pc.pop();
+    MUTEX_UNLOCK(lock);
+    return return_value;
+}
 #endif
