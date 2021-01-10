@@ -1,6 +1,6 @@
 #include "TileJob.hpp"
 
-void Tile::fill_new_tile()
+void TileJob::fill_new_tile_job()
 {
     int min_x = start_row;
     int max_x = end_row;

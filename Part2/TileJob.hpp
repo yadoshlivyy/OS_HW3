@@ -2,21 +2,21 @@
 #define _TILE_JOB_H
 #include "GameTable.hpp"
 
-class Tile
+class TileJob
 {
 public:
-    Tile() : old_table(nullptr), new_table(nullptr), start_row(0), end_row(0) {}
+    TileJob() : old_table(nullptr), new_table(nullptr), start_row(0), end_row(0) {}
 
-    Tile(GameTable *old_table, GameTable *new_table, int start_row, int end_row) : old_table(old_table), new_table(new_table),
+    TileJob(GameTable *old_table, GameTable *new_table, int start_row, int end_row) : old_table(old_table), new_table(new_table),
                                                                            start_row(start_row), end_row(end_row){};
 
-    Tile(const Tile &tile) = default;
+    TileJob(const TileJob &tile) = default;
 
-    Tile &operator=(const Tile &tile) = default;
+    TileJob &operator=(const TileJob &tile) = default;
 
-    void fill_new_tile();
+    void fill_new_tile_job();
 
-    ~Tile() = default;
+    ~TileJob() = default;
 
 private:
     GameTable *old_table;
