@@ -1,5 +1,3 @@
-
-
 #ifndef __UNTITLED_WORKER_THREAD_H
 #define __UNTITLED_WORKER_THREAD_H
 #include "Game.hpp"
