@@ -1,8 +1,8 @@
 #ifndef __GAMERUN_H
 #define __GAMERUN_H
-#include "Headers.hpp"
-#include "Semaphore.hpp"
-#include "PCQueue.hpp"
+#include "../Part1/Headers.hpp"
+#include "../Part1/Semaphore.hpp"
+#include "../Part1/PCQueue.hpp"
 #include "Thread.hpp"
 #include "TileJob.hpp"
 // #include "GameTable.hpp"

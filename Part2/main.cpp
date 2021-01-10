@@ -1,5 +1,4 @@
 #include "Game.hpp"
-#include "../Part1/Semaphore.hpp"
 static inline game_params parse_input_args(int argc, char **argv);
 static inline void usage(const char *mes);
 static void calc_and_append_statistics(uint n_threads, const vector<double> &gen_hist, const vector<double> &tile_hist);
