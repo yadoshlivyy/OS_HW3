@@ -28,9 +28,111 @@ int GameTable::get_columns_num() const
 {
     return this->columns_num;
 }
+int GameTable::calculate_dominating(int x, int y) const
+{
+    int max = 0;
+    int arr[7] = {0, 0, 0, 0, 0, 0, 0};
+    if (cell_in_board_and_alive(x - 1, y - 1))
+    {
+        arr[table[x - 1][y - 1]] += 1;
+    }
+    if (cell_in_board_and_alive(x - 1, y))
+    {
+        arr[table[x - 1][y]] += 1;
+    }
+    if (cell_in_board_and_alive(x - 1, y + 1))
+    {
+        arr[table[x - 1][y + 1]] += 1;
+    }
+    if (cell_in_board_and_alive(x + 1, y - 1))
+    {
+        arr[table[x + 1][y - 1]] += 1;
+    }
+    if (cell_in_board_and_alive(x + 1, y))
+    {
+        arr[table[x + 1][y]] += 1;
+    }
+    if (cell_in_board_and_alive(x + 1, y + 1))
+    {
+        arr[table[x + 1][y + 1]] += 1;
+    }
+    if (cell_in_board_and_alive(x, y + 1))
+    {
+        arr[table[x][y + 1]] += 1;
+    }
+    if (cell_in_board_and_alive(x, y - 1))
+    {
+        arr[table[x][y - 1]] += 1;
+    }
+    for (int i = 0; i < 7; i++)
+    {
+        if (arr[i] * i > max)
+        {
+            max = arr[i] * i;
+        }
+        arr[i] = arr[i] * i;
+    }
+    for (int i=0; i < 7; i++)
+    {
+        if (arr[i] == max)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+int GameTable::calculate_average(int x, int y) const
+{
+    int sum = table[x][y];
+    int num = 1;
+    if (cell_in_board_and_alive(x - 1, y - 1))
+    {
+        sum += table[x - 1][y - 1];
+        num += 1;
+    }
+    if (cell_in_board_and_alive(x - 1, y))
+    {
+        sum += table[x - 1][y];
+        num += 1;
+    }
+    if (cell_in_board_and_alive(x - 1, y + 1))
+    {
+        sum += table[x - 1][y + 1];
+        num += 1;
+    }
+    if (cell_in_board_and_alive(x + 1, y - 1))
+    {
+        sum += table[x + 1][y - 1];
+        num += 1;
+    }
+    if (cell_in_board_and_alive(x + 1, y))
+    {
+        sum += table[x + 1][y];
+        num += 1;
+    }
+    if (cell_in_board_and_alive(x + 1, y + 1))
+    {
+        sum += table[x + 1][y + 1];
+        num += 1;
+    }
+    if (cell_in_board_and_alive(x, y + 1))
+    {
+        sum += table[x][y + 1];
+        num += 1;
+    }
+    if (cell_in_board_and_alive(x, y - 1))
+    {
+        sum += table[x][y - 1];
+        num += 1;
+    }
+    
+        return round(double(sum) / double(num));
+
+}
 
 int GameTable::cell_in_board_and_alive(int x, int y) const
 {
+
     if (x >= rows_num || x < 0 || y < 0 || y >= columns_num)
     {
         return 0;
@@ -42,7 +144,7 @@ int GameTable::cell_in_board_and_alive(int x, int y) const
     return 0;
 }
 
-bool GameTable::cell_is_alive(int x, int y) const
+int GameTable::cell_is_alive(int x, int y) const
 {
     if (x < 0 || y < 0 || x >= rows_num || y >= columns_num)
     {
@@ -50,18 +152,23 @@ bool GameTable::cell_is_alive(int x, int y) const
     }
     int alive_neighbours = cell_in_board_and_alive(x - 1, y - 1) +
                            cell_in_board_and_alive(x - 1, y) +
-                           cell_in_board_and_alive(x - 1, y + 1) + cell_in_board_and_alive(x + 1, y - 1) + cell_in_board_and_alive(x + 1, y) +
-                           cell_in_board_and_alive(x + 1, y + 1) + cell_in_board_and_alive(x, y - 1) + cell_in_board_and_alive(x, y + 1);
+                           cell_in_board_and_alive(x - 1, y + 1) +
+                           cell_in_board_and_alive(x + 1, y - 1) +
+                           cell_in_board_and_alive(x + 1, y) +
+                           cell_in_board_and_alive(x + 1, y + 1) +
+                           cell_in_board_and_alive(x, y - 1) +
+                           cell_in_board_and_alive(x, y + 1);
 
     if (!table[x][y] && alive_neighbours == 3)
     {
-        return true;
+
+        return calculate_dominating(x, y);
     }
     if (table[x][y] && (alive_neighbours == 2 || alive_neighbours == 3))
     {
-        return true;
+        return table[x][y];
     }
-    return false;
+    return 0;
 }
 
 ostream &operator<<(ostream &os, const GameTable &GameTable)

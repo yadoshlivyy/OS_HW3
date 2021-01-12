@@ -15,9 +15,12 @@ void Game::run()
 	for (uint i = 0; i < m_gen_num; ++i)
 	{
 		auto gen_start = std::chrono::system_clock::now();
+
 		_step(i); // Iterates a single generation
+
 		auto gen_end = std::chrono::system_clock::now();
 		m_gen_hist.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(gen_end - gen_start).count());
+
 		print_board(nullptr);
 	} // generation loop
 	print_board("Final Board");
@@ -80,28 +83,35 @@ void Game::_step(uint curr_gen)
 	{
 		return;
 	}
+
 	int rowsForEach = prev->get_rows_num() / m_thread_num;
 	int currRow = 0, reported = 0, nextRow = 0;
 	thread_tools toolbox = {&workers_report, &reported, m_thread_num, false, &m_tile_hist, &report_mutex};
-	for (int i = 0; i < m_thread_num; i++)
+	for (int phase = 1; phase < 3; phase++)
 	{
-		nextRow = currRow + rowsForEach;
-		//in case it is the last iteration, we need to add the rest of the raws, if there is any
-		if (i == m_thread_num - 1)
-		{
-			nextRow += prev->get_rows_num() - (rowsForEach * m_thread_num);
-		}
-		TileJob tile(prev, next, currRow, nextRow - 1,1);
-		toolbox.tile = tile;
-		jobs.push(toolbox);
-		currRow = nextRow;
-	}
-	//wait for workers to finish
-	workers_report.down();
 
-	GameTable *tmp = prev;
-	prev = next;
-	next = tmp;
+		currRow = 0, reported = 0, nextRow = 0;
+
+		for (int i = 0; i < m_thread_num; i++)
+		{
+			nextRow = currRow + rowsForEach;
+			//in case it is the last iteration, we need to add the rest of the raws, if there is any
+			if (i == m_thread_num - 1)
+			{
+				nextRow += prev->get_rows_num() - (rowsForEach * m_thread_num);
+			}
+			TileJob tile(prev, next, currRow, nextRow - 1, phase);
+			toolbox.tile = tile;
+			jobs.push(toolbox);
+			currRow = nextRow;
+		}
+
+		workers_report.down();
+
+		GameTable *tmp = prev;
+		prev = next;
+		next = tmp;
+	}
 }
 
 void Game::_destroy_game()
@@ -152,20 +162,3 @@ inline void Game::print_board(const char *header)
 			usleep(GEN_SLEEP_USEC);
 	}
 }
-
-/* Function sketch to use for printing the board. You will need to decide its placement and how exactly 
-	to bring in the field's parameters. 
-
-		cout << u8"╔" << string(u8"═") * field_width << u8"╗" << endl;
-		for (uint i = 0; i < field_height ++i) {
-			cout << u8"║";
-			for (uint j = 0; j < field_width; ++j) {
-                if (field[i][j] > 0)
-                    cout << colors[field[i][j] % 7] << u8"█" << RESET;
-                else
-                    cout << u8"░";
-			}
-			cout << u8"║" << endl;
-		}
-		cout << u8"╚" << string(u8"═") * field_width << u8"╝" << endl;
-*/

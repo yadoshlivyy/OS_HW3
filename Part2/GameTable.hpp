@@ -36,7 +36,10 @@ private:
 
     int_mat table;
 
-    bool cell_is_alive(int x, int y) const;
+    int calculate_dominating(int x, int y) const;
+    int calculate_average(int x, int y) const;
+
+    int cell_is_alive(int x, int y) const;
 
     int cell_in_board_and_alive(int x, int y) const;
 

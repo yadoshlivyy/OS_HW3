@@ -10,10 +10,6 @@ Semaphore::Semaphore() : value(0)
     {
         cout << "unsucesfull mutex initizlization" << endl;
     }
-    else
-    {
-        cout << "semaphore successfully created" << endl;
-    }
 }
 Semaphore::Semaphore(unsigned val) : value(val)
 {
@@ -24,10 +20,6 @@ Semaphore::Semaphore(unsigned val) : value(val)
     if (pthread_mutex_init(&mutex, NULL) != 0)
     {
         cout << "unsucesfull mutex initizlization" << endl;
-    }
-    else
-    {
-        cout << "semaphore successfully created" << endl;
     }
 }
 void Semaphore::up()
@@ -49,6 +41,6 @@ void Semaphore::down()
     {
         WAIT(condition, mutex);
     }
-    
+
     MUTEX_UNLOCK(mutex);
 }
