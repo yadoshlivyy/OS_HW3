@@ -28,14 +28,14 @@ void Game::run()
 	_destroy_game();
 }
 
-Game::Game(game_params param) : jobs(), report_mutex(1), workers_report(), m_tile_hist(), m_gen_hist(), m_threadpool(), prev(nullptr), next(nullptr)
+Game::Game(game_params param) : jobs(), mutex_report(1), workers_mutex(), m_tile_hist(), m_gen_hist(), m_threadpool(), prev(nullptr), next(nullptr)
 {
 	filename = param.filename;
 	m_gen_num = param.n_gen;
 	interactive_on = param.interactive_on;
 	print_on = param.print_on;
 	game_is_running_now = false;
-	m_thread_num_tmp = param.n_thread;
+	temp_value_thread_num = param.n_thread;
 }
 
 const vector<double> Game ::gen_hist() const
@@ -50,11 +50,11 @@ const vector<double> Game ::tile_hist() const
 
 uint Game::thread_num() const
 {
-	if (m_thread_num_tmp >= prev->get_rows_num())
+	if (temp_value_thread_num >= prev->get_rows_num())
 	{
 		return prev->get_rows_num();
 	}
-	return m_thread_num_tmp;
+	return temp_value_thread_num;
 }
 void Game::_init_game()
 {
@@ -86,7 +86,7 @@ void Game::_step(uint curr_gen)
 
 	int rowsForEach = prev->get_rows_num() / m_thread_num;
 	int currRow = 0, reported = 0, nextRow = 0;
-	thread_tools toolbox = {&workers_report, &reported, m_thread_num, false, &m_tile_hist, &report_mutex};
+	thread_tools toolbox = {&workers_mutex, &reported, m_thread_num, false, &m_tile_hist, &mutex_report};
 	for (int phase = 1; phase < 3; phase++)
 	{
 
@@ -106,7 +106,7 @@ void Game::_step(uint curr_gen)
 			currRow = nextRow;
 		}
 
-		workers_report.down();
+		workers_mutex.down();
 
 		GameTable *tmp = prev;
 		prev = next;

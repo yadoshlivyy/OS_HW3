@@ -33,7 +33,7 @@ struct game_params
 	bool interactive_on;
 	bool print_on;
 };
-
+// all the info that thread need to execute task correctly
 struct thread_tools
 {
 	Semaphore *report_alert;
@@ -47,7 +47,7 @@ struct thread_tools
 /*--------------------------------------------------------------------------------
 									Class Declaration
 --------------------------------------------------------------------------------*/
-
+// incapsulation of thread logic
 class ThreadWorker : public Thread
 {
 
@@ -67,11 +67,11 @@ class ThreadWorker : public Thread
 			auto work_start = std::chrono::system_clock::now();
 			toolbox.tile.fill_new_tile_job();
 			auto work_end = std::chrono::system_clock::now();
-			reportFinished((double)std::chrono::duration_cast<std::chrono::microseconds>(work_end - work_start).count());
+			jobFinishedAlert((double)std::chrono::duration_cast<std::chrono::microseconds>(work_end - work_start).count());
 		}
 	}
 
-	void reportFinished(double time)
+	void jobFinishedAlert(double time)
 	{
 		toolbox.report_lock->down();
 		*toolbox.reported_workers += 1;
@@ -114,14 +114,14 @@ protected: // All members here are protected, instead of private for testing pur
 	bool interactive_on; // Controls interactive mode - that means, prints the board as an animation instead of a simple dump to STDOUT
 	bool print_on;		 // Allows the printing of the board. Turn this off when you are checking performance (Dry 3, last question)
 
-	// TODO: Add in your variables and synchronization primitives
+	
 	bool game_is_running_now;
-	uint m_thread_num_tmp;
+	uint temp_value_thread_num;
 	string filename;
 	GameTable *prev;
 	GameTable *next;
 	PCQueue<thread_tools> jobs;
-	Semaphore report_mutex;
-	Semaphore workers_report;
+	Semaphore mutex_report;
+	Semaphore workers_mutex;
 };
 #endif
